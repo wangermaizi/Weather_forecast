@@ -1,0 +1,90 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body{
+    font-size: 0.16rem;
+}
+.header{
+    height: 0.5rem;
+    width: 100%;
+    font-size: 0.24rem;
+    display: flex;
+    justify-content: space-around;
+    position: relative;
+    background-color: rgba(47, 47, 47, 0.98);
+}
+.header input{
+    width: 60%;
+    height: 0.26rem;
+    margin-top: 0.12rem;
+    text-indent: 0.1rem;
+    border-radius: 0.05rem;
+    box-shadow: 0 0.01rem 0 rgba(255,255,255,0.24), 0 1px 6px rgba(0,0,0,0.45) inset;
+    border: none;
+}
+.header button{
+    width: 0.5rem;
+    height: 0.5rem;
+    color: white;
+    background-color: #99CF00;
+    text-align: center;
+    font-size: 0.2rem;
+    line-height: 0.5rem;
+    border-radius: 0.25rem;
+    border: none;
+}
+
+.main{
+    width: 3.75rem;
+    height: 2.5rem;
+}
+.main h1:nth-child(1){
+    text-align: center;
+}
+.main h2{
+    text-align: center;
+}
+.main h3{
+    text-align: right;
+}
+.main h5{
+    text-align: center;
+}
+.main img{
+    width: 0.3rem;
+    height: 0.3rem;
+    margin: 0 auto;
+}
+.hisMsg{
+    display: flex;
+    justify-content: space-between;
+    padding: 0 0.2rem;
+    margin: 0.1rem 0;
+}
+.hisMsg button{
+    width: 0.6rem;
+    height: 0.25rem;
+    background-color: #ca3535;
+    border-color: #c43c35;
+    color: #ffffff;
+}
+.hisBtn{
+    display: flex;
+    align-items: center;
+}
+.hisBtn button{
+    margin: 0 0.05rem;
+    color: white;
+    background: #10bbf1;
+    height: 0.35rem;
+    width: 0.35rem;
+    text-align: center;
+    line-height: 0.25rem;
+    border: 1px solid #10bbf1;
+    outline: none;
+    font: 500 0.14rem "Raleway", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    transition: color 0.1s linear, background-color 0.1s linear, border-color 0.1s linear;
+    border-radius: 5px;
+}

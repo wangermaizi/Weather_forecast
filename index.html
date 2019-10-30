@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>天气预报例子(Ajax)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <script src="js/Responsive_layout.js" type="text/javascript" charset="UTF-8"></script>
+    <link rel="stylesheet" href="css/main.css" type="text/css">
+</head>
+<body>
+    <div class="header">
+        <input type="text" id="search" placeholder="请输入查找的城市">
+        <button class="comfirm">确定</button>
+    </div>
+    <div class="main">
+
+    </div>
+    <div class="history">
+        <div class="hisMsg">
+            历史记录
+            <button>清除历史</button>
+        </div>
+        <div class="hisBtn">
+            <!--<button>深圳</button>-->
+        </div>
+    </div>
+    <script src="js/Ajax_package.js"></script>
+    <script>
+        var mainDiv = document.querySelector('.main');
+        var iptDiv = document.querySelector('#search');
+        var hisBtn = document.querySelector('.history .hisBtn');
+
+        //设定一个全局变量,将代办事项保存到
+        if(localStorage.cityList == undefined){
+            var cityList = [];
+        }else{
+            var cityList = JSON.parse(localStorage.cityList);
+            //console.log(cityList);
+            renderHis(cityList);
+        }
+        iptDiv.onkeydown = function(e){
+            if (e.key == 'Enter'){
+                var cityName = iptDiv.value;
+                var body = document.querySelector('body');
+                var httpUrl = 'https://free-api.heweather.net/s6/weather/now?location='+cityName+'&key=abdd1ba634f24133a8b106f901a12399';
+                getAjax(httpUrl,'',function (res) {
+                    console.log(res);
+                    var obj = res.response;
+                    var data = JSON.parse(obj).HeWeather6;
+                    console.log(data);
+                    if (data[0].status == "unknown location") {
+                        var check = document.querySelector('div.tip');
+                        if (check == undefined) {
+                            var tipDiv = document.createElement('div');
+                            tipDiv.className = 'tip';
+                            tipDiv.innerHTML = '请输入正确城市名称';
+                            body.appendChild(tipDiv);
+                        }else{
+                            check.innerHTML = '请输入正确城市名称';
+                        }
+                    }else{
+                        //获取城市信息
+                        var cityMsg = data[0].basic;
+                        var nowData = data[0].now;
+                        console.log(nowData);
+                        var picture = nowData.cond_code;
+                        var picUrl = 'https://cdn.heweather.com/cond_icon/'+picture+'.png';
+                        mainDiv.innerHTML = `
+                        <h1>${cityMsg.location}:隶属于${cityMsg.admin_area}</h1>
+                        <h1>天气状况:${nowData.cond_txt}</h1>
+                        <img src=${picUrl} alt="图片暂时无法加载">
+                        <h2>温度:${nowData.tmp}</h2>
+                        <h3>体表温度：${nowData.fl}</h3>
+						<h4>风向：${nowData.wind_dir}</h4>
+						<h5>风力：${nowData.wind_sc}</h5>
+                        `;
+                        //数组去重
+                        /*cityList.forEach(function (item,index) {
+                            if (cityMsg.location ) {
+
+                            }
+                        })*/
+                        cityList.push(cityMsg.location);
+                        cityList = arr(cityList);
+                        renderHis(cityList);
+                        //localStorage.clear();
+                        //接下来是保存信息
+                        localStorage.cityList = JSON.stringify(cityList);
+                    }
+                });
+                iptDiv.value = '';
+            }
+        };
+        //为了适应移动端
+        var confirmDiv = document.querySelector('.header .comfirm');
+        confirmDiv.onclick = function (e) {
+            var cityName = iptDiv.value;
+            var body = document.querySelector('body');
+            var httpUrl = 'https://free-api.heweather.net/s6/weather/now?location='+cityName+'&key=abdd1ba634f24133a8b106f901a12399';
+            getAjax(httpUrl,'',function (res) {
+                console.log(res);
+                var obj = res.response;
+                var data = JSON.parse(obj).HeWeather6;
+                console.log(data);
+                if (data[0].status == "unknown location") {
+                    var check = document.querySelector('div.tip');
+                    if (check == undefined) {
+                        var tipDiv = document.createElement('div');
+                        tipDiv.className = 'tip';
+                        tipDiv.innerHTML = '请输入正确城市名称';
+                        body.appendChild(tipDiv);
+                    }else{
+                        check.innerHTML = '请输入正确城市名称';
+                    }
+                }else{
+                    //获取城市信息
+                    var cityMsg = data[0].basic;
+                    var nowData = data[0].now;
+                    console.log(nowData);
+                    var picture = nowData.cond_code;
+                    var picUrl = 'https://cdn.heweather.com/cond_icon/'+picture+'.png';
+                    mainDiv.innerHTML = `
+                        <h1>${cityMsg.location}:隶属于${cityMsg.admin_area}</h1>
+                        <h1>天气状况:${nowData.cond_txt}</h1>
+                        <img src=${picUrl} alt="图片暂时无法加载">
+                        <h2>温度:${nowData.tmp}</h2>
+                        <h3>体表温度：${nowData.fl}</h3>
+						<h4>风向：${nowData.wind_dir}</h4>
+						<h5>风力：${nowData.wind_sc}</h5>
+                        `;
+                    //数组去重
+                    /*cityList.forEach(function (item,index) {
+                        if (cityMsg.location ) {
+
+                        }
+                    })*/
+                    cityList.push(cityMsg.location);
+                    cityList = arr(cityList);
+                    renderHis(cityList);
+                    //localStorage.clear();
+                    //接下来是保存信息
+                    localStorage.cityList = JSON.stringify(cityList);
+                }
+            });
+            iptDiv.value = '';
+        };
+        //渲染下面历史按钮
+        function renderHis(cityList) {
+            var checked = hisBtn.querySelector('button');
+            if (checked != null) {
+                hisBtn.innerHTML = ''
+            }
+            cityList.forEach(function (item, index) {
+                //console.log(item);
+                var btn = document.createElement('button');
+                btn.innerHTML = item;
+                hisBtn.appendChild(btn);
+            })
+        }
+
+        //设置冒泡事件
+        hisBtn.onclick = function (e) {
+            if (e.target.nodeName == 'BUTTON') {
+                console.log(e.target.innerText);
+                var city = e.target.innerText;
+                var httpUrl = 'https://free-api.heweather.net/s6/weather/now?location='+city+'&key=abdd1ba634f24133a8b106f901a12399';
+
+                getAjax(httpUrl,'',function (res) {
+                    console.log(res);
+                    var obj = res.response;
+                    var data = JSON.parse(obj).HeWeather6;
+                    console.log(data);
+                    //获取城市信息
+                    var cityMsg = data[0].basic;
+                    var nowData = data[0].now;
+                    var picture = nowData.cond_code;
+                    var picUrl = 'https://cdn.heweather.com/cond_icon/'+picture+'.png';
+                    console.log(nowData);
+                    mainDiv.innerHTML = `
+                    <h1>${cityMsg.location}:隶属于${cityMsg.admin_area}</h1>
+                    <h1>天气状况:${nowData.cond_txt}</h1>
+                    <img src=${picUrl} alt="图片暂时无法加载">
+                    <h2>温度:${nowData.tmp}</h2>
+                    <h3>体表温度：${nowData.fl}</h3>
+                    <h4>风向：${nowData.wind_dir}</h4>
+                    <h5>风力：${nowData.wind_sc}</h5>
+                    `;
+                });
+            }
+        };
+        //数组去重
+        function arr(cityList) {
+            var arr = [];
+            for (var i = 0; i < cityList.length; i++) {
+                if (arr.indexOf(cityList[i]) == -1) {
+                    arr.push(cityList[i])
+                }
+            }
+            return arr;
+        }
+        //清除历史记录
+        var clearBtn = document.querySelector('.hisMsg button');
+        clearBtn.onclick = function () {
+            localStorage.clear();
+            hisBtn.innerHTML = '';
+        }
+    </script>
+</body>
+</html>
